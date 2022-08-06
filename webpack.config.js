@@ -16,8 +16,8 @@ const BaseConfig = {
         exclude: /node_modules/,
       },
       {
-        test: /\.(woff(2)?|eot|ttf|otf|svg|)$/,
-        type: 'asset/inline',
+        test: /\.svg$/,
+        loader: 'svg-inline-loader',
       },
       {
         test: /\.css$/i,

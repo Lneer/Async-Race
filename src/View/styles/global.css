@@ -1,0 +1,51 @@
+
+@keyframes MoveOn{
+
+	from {
+		transform: translateX(0px)
+	}
+	to { 
+		transform: translateX(2000px)
+	}
+}
+
+.figure{
+	width: 150px;
+	height: 100px;
+	align-self: center;
+	/* background-color: black; */
+	background-size: cover;
+
+}
+.figure:hover {
+	animation: "MoveOn" 5s;
+}
+.car {
+	gap: 3px;
+}
+.car-name {
+	align-self: center;
+	padding-left: 10px;
+	font-size: 1rem;
+}
+.car-setting button{
+	width: 100px;
+	height: 35px;
+	margin: 0;
+	font-size: 12px;
+}
+svg {
+	width: 100px;
+	height: 40px;
+	position: absolute;
+	bottom: 0;
+	left: 0;
+	font-size: 0px;
+}
+.race-setting{
+	border-bottom: solid 3px;
+	position: relative;
+}
+.race-setting button{
+	align-self: flex-start;
+}

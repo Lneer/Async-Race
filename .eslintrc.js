@@ -1,17 +1,17 @@
-module.exports = {
+const config  =  {
   env: {
     browser: true,
     es2021: true,
   },
   extends: [
-    'airbnb',
     'airbnb-base',
-    'plugin:@typescript-eslint/recommended',
+    // 'airbnb-typescript/base'
   ],
   parser: '@typescript-eslint/parser',
   parserOptions: {
     ecmaVersion: 'latest',
     sourceType: 'module',
+    project: './tsconfig.json',
   },
   plugins: [
     '@typescript-eslint',
@@ -19,3 +19,5 @@ module.exports = {
   rules: {
   },
 };
+
+export {config}
