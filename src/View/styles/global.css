@@ -1,4 +1,6 @@
-
+* {
+	font-size: 12px;
+}
 @keyframes MoveOn{
 
 	from {
@@ -8,17 +10,28 @@
 		transform: translateX(2000px)
 	}
 }
-
-.figure{
-	width: 150px;
-	height: 100px;
-	align-self: center;
-	/* background-color: black; */
-	background-size: cover;
-
+header{
+	margin-top: 5px;
+	margin-bottom: 15px;
 }
-.figure:hover {
-	animation: "MoveOn" 5s;
+header div label {
+	width: 120px;
+	height: 30px;
+	opacity: 0.5;;
+	font-size: 12px !important;
+}
+
+header div input:checked + label {
+	width: 170px;
+	height: 30px;
+	opacity: 1;
+}
+
+.carimg{
+	width: 150px;
+	height: 90px;
+	align-self: center;
+	background-size: cover;
 }
 .car {
 	gap: 3px;
@@ -34,7 +47,7 @@
 	margin: 0;
 	font-size: 12px;
 }
-svg {
+.carimg svg {
 	width: 100px;
 	height: 40px;
 	position: absolute;
@@ -42,10 +55,30 @@ svg {
 	left: 0;
 	font-size: 0px;
 }
+.carimg .finish-flag {
+	left: 80vw;
+}
 .race-setting{
 	border-bottom: solid 3px;
 	position: relative;
 }
 .race-setting button{
 	align-self: flex-start;
+}
+h3{
+	font-size: 20px;
+}
+h4{
+	font-size: 15px;
+}
+
+#operationField {
+	width: 200px;
+}
+
+a{
+	cursor: pointer;
+}
+.modal {
+	display: block;
 }

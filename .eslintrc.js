@@ -1,11 +1,11 @@
-const config  =  {
+export const config  =  {
   env: {
     browser: true,
     es2021: true,
   },
   extends: [
     'airbnb-base',
-    // 'airbnb-typescript/base'
+    'airbnb-typescript/base'
   ],
   parser: '@typescript-eslint/parser',
   parserOptions: {
@@ -19,5 +19,3 @@ const config  =  {
   rules: {
   },
 };
-
-export {config}
