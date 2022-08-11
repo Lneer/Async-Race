@@ -93,3 +93,98 @@ export class EngineHandler{
     return response 
   }
 }
+
+export class WinnerHandler {
+  Garage:GarageHandler
+  BaseLink:string
+  constructor (Baselink:string){
+    this.BaseLink = Baselink
+    this.Garage = new GarageHandler(Baselink)
+  }
+  _getSortOrder = (...args:Array<string | undefined>) => {
+    if(args && args.length === 2)
+     return `&_sort=${args[0]}&_order=${args[1]}`
+    return ''
+  }
+  getWinners = async(page:number, limit = 10, sort:string, order:string ) => {
+    let fullUrl:string = this.BaseLink + `\\winners?_page=${page}&_limit=${limit}&_sort=${sort}&_order=${order}`
+    const method = 'GET'
+    const response = await fetch(fullUrl,{
+      method: method,
+    })
+    const items: any = response.json()
+    return  {
+      items: await items,
+      count: response.headers.get('X-Total-Count'),
+    }
+  }
+
+  getWinner = async(id:number) => {
+    let fullUrl:string = this.BaseLink + `\\winners\\${id}`
+    const method = 'GET'
+    const response = await fetch(fullUrl,{
+      method:method
+    })
+    return response.json()
+  }
+
+  getWinnerStatus = async(id:number) => {
+    let fullUrl:string = this.BaseLink + `\\winners\\${id}`
+    const method = 'GET'
+    const response = await fetch(fullUrl,{
+      method:method
+    })
+    return response.status
+  }
+  createWinner = async (body: {id:number, wins:number, time:number}) => {
+    let fullUrl:string = this.BaseLink + `\\winners`;
+    const method = 'POST'
+    const response = await fetch(fullUrl, {
+      method: method,
+      body: JSON.stringify(body),
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
+    return response.json()
+  }
+  deleteWinner = async(id:number) => {
+    let fullUrl:string = this.BaseLink + `\\winners\\${id}`
+    const method = 'DELETE'
+    const response = await fetch(fullUrl,{
+      method:method
+    })
+    return response.json()
+  }
+
+
+  updateWinner = async (id:number, body: { wins: number,time: number}) => {
+    let fullUrl:string = this.BaseLink + `\\winners\\${id}`
+    const method = 'PUT'
+    const response = await fetch(fullUrl,{
+      method:method,
+      body:JSON.stringify(body),
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
+    return response.json()
+  }
+
+  saveWinner = async (id:number, time:number) =>{
+    const winnerStatus = await this.getWinnerStatus(id);
+    if (winnerStatus === 404) {
+      await this.createWinner({
+        id,
+        wins:1,
+        time,
+      })
+    } else {
+      const winner = await this.getWinner(id);
+      await this.updateWinner(id, {
+        wins:winner.wins +1 ,
+        time: time < winner.time? time: winner.time,
+      })
+    }
+  }
+}

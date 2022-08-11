@@ -30,4 +30,14 @@ export class Render {
 		const pageInt = page ? +page : 1;
 		(counter.lastElementChild as HTMLHeadElement).innerText = `page(${pageInt})`;
 	}
+
+	 rengerWinners = (winners:any) => {
+		const content = document.querySelector('.content-wrapper') as HTMLElement;
+		content.innerHTML ='';
+		content.innerHTML = this.Base.getWinners();
+		(content.querySelector('h1') as HTMLHeadingElement).innerText = `Winners(${winners.count})`
+		const page = sessionStorage.getItem('winnerspage');
+		const pageInt = page ? +page : 1;
+		(content.querySelector('h2') as HTMLHeadingElement).innerText = `page#${pageInt}`
+	}
 }

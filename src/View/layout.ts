@@ -14,8 +14,8 @@ export class Layout {
 
   getStatusField = ():string => {
     return (`<div class="race-status">
-              <button type="button" class="btn btn-primary p-2 id ="start-all"">start All</button>
-              <button type="button" class="btn btn-secondary p-2" id ="reset-all">reset All</button>
+              <button type="button" class="btn btn-primary p-2" id ="start-all">start All</button>
+              <button type="button" class="btn btn-secondary p-2" id ="reset-all" disabled>reset All</button>
               <button type="button" class="btn btn-success p-2" id="generate-car">Generate</button>
             </div>`)
   };
@@ -101,4 +101,51 @@ export class Layout {
   </div>`
     return modal
   }
+
+  getWinners = () => {
+    let sortType = sessionStorage.getItem('sortType') ? sessionStorage.getItem('sortType') : 'time'
+    let orderType = sessionStorage.getItem('orderType') ? sessionStorage.getItem('orderType') : 'ASC'
+    const winDisplay = sortType === 'wins'?'':`class="display"`
+    const timeDisplay = sortType === 'time'?'':`class="display"`
+    const orderDirect = orderType === 'ASC' ? '': 'style = "transform: scaleY(-1);"'
+   return  `<div class = container-sm>
+   <h1>Winners  </h1>
+    <h2>Page  </h2>
+    <table class = "table table-striped">
+    <thead>
+        <th scope="col">Number</th>
+        <th scope="col">Car</th>
+        <th scope="col">Name</th>
+        <th class="count-sort" scope="col">Wins count <span ${orderDirect} ${winDisplay}>&#8659</span></th>
+        <th class="time-sort" scope="col">Best Time<span ${orderDirect} ${timeDisplay}>&#8659</span></th>
+    </thead>
+    <tbody id = "winner-tbody">
+  
+    </tbody>
+    </table>
+    <nav aria-label="Page navigation example">
+    <ul class="pagination-winners pagination justify-content-start mt-5">
+      <li class="page-item prev">
+        <a class="page-link prev">Previous</a>
+      </li>
+      <li class="page-item next">
+        <a class="page-link next">Next</a>
+      </li>
+    </ul>
+  </nav>
+    </div>
+    `
+  }  
+  
+    getWinner = (index:number, winner:{wins:number,time:number},car:{color:string, name:string }) => {
+      const trElem = document.createElement('tr');
+      trElem.innerHTML = `
+      <td>${index+1}</td>
+      <td ><svg class = "car-icon" style = "fill:${car.color}">${carTemplate}</svg></td>
+      <td>${car.name}</td>
+      <td>${winner.wins}</td>
+      <td>${winner.time}</td>`
+      return trElem
+    }
+  
 }

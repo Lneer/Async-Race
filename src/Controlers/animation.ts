@@ -6,7 +6,7 @@ export const animation = (elem: SVGElement, finish:number, velosity:number) => {
 
     const startAllButton = statusField.querySelector('.btn-primary') as HTMLButtonElement;
     const resetAllButton = statusField.querySelector('.btn-secondary') as HTMLButtonElement;
-    const buttonSet: HTMLButtonElement[] = [startButton,resetButton,startAllButton,resetAllButton]
+    const buttonSet: HTMLButtonElement[] = [startButton,startAllButton]
     buttonSet.forEach((elem) => elem.toggleAttribute('disabled'))
     
     const screenWidth = window.innerWidth

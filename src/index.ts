@@ -1,10 +1,11 @@
 import { startGarage } from "./Pages/Garage";
-import { winnersPage } from "./Pages/Winners";
+import { startWinners, winnersPage } from "./Pages/Winners";
 import { Layout } from "./View/layout";
 
 const body = document.querySelector('body') as HTMLBodyElement;
 body.append(Layout.getHeader())
 body.append(Layout.getContetnWrapper());
+// alert('Подождите с проверкой до четверга. Спасибо за понимание')
 const pages = {
   garage: true,
   winners: false
@@ -12,7 +13,7 @@ const pages = {
 const randerPage  = (pages:any):void => {
   if(pages.garage) {
     startGarage()
-  } else winnersPage()
+  } else startWinners()
 }
 randerPage(pages)
 const header = document.querySelector('#header-wrapper') as HTMLDivElement

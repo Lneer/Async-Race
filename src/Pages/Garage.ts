@@ -3,12 +3,14 @@ import { generateCar } from "../Controlers/listenets/generateCars";
 import { getCarID } from "../Controlers/listenets/getCarId";
 import { listenCreate } from "../Controlers/listenets/listenerCreate";
 import { toggleUpdateField } from "../Controlers/listenets/toggleUpdate";
-import { EngineHandler, GarageHandler } from "../Controlers/Requests";
+import { EngineHandler, GarageHandler, WinnerHandler } from "../Controlers/Requests";
 import { Layout } from "../View/layout";
 import { Render } from "../View/RanderLayout";
 
-const Garage = new GarageHandler('http://127.0.0.1:3000');
-const Engine = new EngineHandler('http://127.0.0.1:3000');
+const link = 'http://127.0.0.1:3000'
+const Garage = new GarageHandler(link);
+const Engine = new EngineHandler(link);
+const Winner = new WinnerHandler(link)
 const GarageRender = new Render
 
  const  generateGarage = async(page:number = 1) => {
@@ -55,9 +57,10 @@ export const startGarage = () =>{
     startEngine()
     massStart()
     resetEngine()
+    resetAll()
   })
 }
-const  createCarBody = () => {
+const  createCarBody = async() => {
   let page = sessionStorage.getItem('page') ? +(sessionStorage.getItem('page') as string) : 1
   const createButton = document.querySelector('.submit-create')
   createButton?.addEventListener('click', async(event:Event) => {
@@ -69,18 +72,21 @@ const  createCarBody = () => {
   })
 }
 
-const deleteCar = () => {
+const deleteCar = async() => {
   let page = sessionStorage.getItem('page') ? +(sessionStorage.getItem('page') as string) : 1
   const carsInGarage = document.querySelector('#cars-in-garage') as HTMLDivElement
   carsInGarage.addEventListener('click', async(event:Event) => {
     if(getCarID(event, 'Remove')) {
-      await Garage.deleteCar(getCarID(event,'Remove') as number)
+      const id = getCarID(event,'Remove') as number
+      await Garage.deleteCar(id)
       const data = await Garage.getCars(page)
       GarageRender.renderGarage(data)
+      const winnersStatus = await Winner.getWinnerStatus(id)
+       if (winnersStatus === 200) Winner.deleteWinner(id)
     }
   })
 }
-const updateCar = () => {
+const updateCar = async() => {
   const carsInGarage = document.querySelector('#cars-in-garage') as HTMLDivElement
   let id:number = 0;
   let updateStatus:boolean = false;
@@ -113,7 +119,7 @@ const updateCar = () => {
   updateButton.addEventListener('click', submitHandler)
 }
 
-const generateCars  = () =>{
+const generateCars  = async() =>{
   let page = sessionStorage.getItem('page') ? +(sessionStorage.getItem('page') as string) : 1
   const generateButton = document.querySelector('#generate-car')
   generateButton?.addEventListener('click', async() => {
@@ -123,10 +129,10 @@ const generateCars  = () =>{
     }
     const data = await Garage.getCars(page)
      GarageRender.renderGarage(data)
+     startGarage()
   })
 }
-
-const pagination = () => {
+const pagination = async() => {
   const carsPerPage = 7;
   const paginationBody = document.querySelector('.pagination')
    paginationBody?.addEventListener('click', async(event:Event) =>{
@@ -138,25 +144,30 @@ const pagination = () => {
   
       const data = await Garage.getCars(page)
       const totalPages = data.count ? Math.ceil(+data.count / carsPerPage) : 1
-      console.log('next')
       page = page === totalPages ? totalPages : page+1
     }
     sessionStorage.setItem('page',`${page}`)
     const data = await Garage.getCars(page)
     GarageRender.renderGarage(data)
+    startGarage()
    })
 
 }
 
-const startEngine = () => {
+const startEngine = async() => {
   const carsInGarage = document.querySelector('#cars-in-garage') as HTMLDivElement
+  const resetAllButton =  document.querySelector('#reset-all') as HTMLButtonElement;
   carsInGarage.addEventListener('click', async(event) => {
+    resetAllButton.removeAttribute('disabled')
     const carDiv = (event.target as HTMLButtonElement).closest('.car') as HTMLDivElement;
     const id = getCarID(event, 'start') as number
+    if(!id) return
     const egineParam = await Engine.startEngine(id)
     let car = carDiv.querySelector('svg') as SVGElement
     const carAnimation = animation(car,egineParam.distance, egineParam.velocity)
-    carAnimation.play()
+    carAnimation.id = id.toString()
+    carAnimation.play();
+    (carDiv.querySelector('.btn-outline-warning') as HTMLButtonElement).toggleAttribute('disabled')
     try {
       const engineResponse = await Engine.drive(id)
       if(engineResponse.status === 500) throw new Error('500 error')
@@ -166,18 +177,19 @@ const startEngine = () => {
   })
 }
 
-const resetEngine =() => {
+const resetEngine =async() => {
   const carsInGarage = document.querySelector('#cars-in-garage') as HTMLDivElement
   carsInGarage.addEventListener('click', async(event) => {
     const carDiv = (event.target as HTMLButtonElement).closest('.car') as HTMLDivElement;
     const id = getCarID(event, 'reset') as number
-    const egineParam = await Engine.stopEngine(id)
-    document.getAnimations().forEach((elem) => elem.cancel())
+    if(!id) return
+    await Engine.stopEngine(id)
+    document.getAnimations().forEach((elem) => {
+      if (elem.id === id.toString()) elem.cancel()
+    })
     const statusField = document.querySelector('#statusField') as HTMLDivElement;
-
     const startButton = carDiv.querySelector('.btn-outline-primary') as HTMLButtonElement;
     const resetButton = carDiv.querySelector('.btn-outline-warning') as HTMLButtonElement;
-
     const startAllButton = statusField.querySelector('.btn-primary') as HTMLButtonElement;
     const resetAllButton = statusField.querySelector('.btn-secondary') as HTMLButtonElement;
     const buttonSet: HTMLButtonElement[] = [startButton,resetButton,startAllButton,resetAllButton]
@@ -185,71 +197,74 @@ const resetEngine =() => {
   })
 }
 const massStart =  () => {
-  const statusField = document.querySelector('#statusField');
+  const resetAllButton =  document.querySelector('#reset-all') as HTMLButtonElement;
+  const startAllButton =  document.querySelector('#start-all') as HTMLButtonElement;
   const carList = document.querySelectorAll('.car') as NodeList;
-  statusField?.addEventListener ('click', async (event:Event) => {
-    if((event.target as HTMLButtonElement).innerText === 'start All') {
-      let engineParametrs:any = [];
-      const promises:any = [];
-      const animationArr:Animation[] =[];
-      const winners:any = []
-      carList.forEach((elem, index) => {
-        const id = ((carList[index] as HTMLDivElement).getAttribute('id') as  string).slice(4)
-        promises.push( Engine.startEngine(Number(id)))
-      })
-      engineParametrs = await Promise.all(promises)
-      console.log(engineParametrs);
-      
-      carList.forEach(async(elem, index) => {
-        let car = (elem as HTMLDivElement).querySelector('svg') as SVGElement;
-        const anim =  animation(car,engineParametrs[index].distance,engineParametrs[index].velocity);
-        anim.id = `${index}`;
-        // ((carList[index] as HTMLDivElement).getAttribute('id') as  string).slice(4)
-        animationArr.push(anim)
-      })
-      carList.forEach(async(elem,index) => {
-        const id = ((elem as HTMLDivElement).getAttribute('id') as  string).slice(4)
-        const response:Response = await Engine.drive(Number(id))
-        try {
-        if (response.status === 500) throw new Error ('engine off')
-      } catch{
-        animationArr[index].pause()
-      }
-      })
-      animationArr.forEach(async(elem:Animation) => {
-        elem.play()
-        winners.push(elem.finished)
-      })
-      const winner = await Promise.race(winners);
-      const carId = (carList[+winner.id] as HTMLDivElement).getAttribute('id')?.slice(4)
-
-      const winnerCar = await Garage.getCar(Number(carId))
-      const winnerSpeed = engineParametrs[+winner.id]
-      const winnerTime = Math.round(winnerSpeed.distance / winnerSpeed.velocity)
-      
-      const modal = Layout.getPopoUp(winnerCar.name, winnerTime)
-      const body = document.querySelector('body') as HTMLBodyElement;
-      body.append(modal)
-      modal.addEventListener('click', (event) => {
-        body.removeChild(modal)
-      })
+  startAllButton.addEventListener('click', async() => {
+    
+    let engineParametrs:any = [];
+    const promises:any = [];
+    const animationArr:Animation[] =[];
+    const winners:any = []
+    carList.forEach((elem, index) => {
+      const id = ((carList[index] as HTMLDivElement).getAttribute('id') as  string).slice(4)
+      promises.push( Engine.startEngine(Number(id)))
+    })
+    engineParametrs = await Promise.all(promises)
+    
+    carList.forEach(async(elem, index) => {
+      let car = (elem as HTMLDivElement).querySelector('svg') as SVGElement;
+      const anim =  animation(car,engineParametrs[index].distance,engineParametrs[index].velocity);
+      anim.id = `${index}`;
+      animationArr.push(anim)
+    })
+    carList.forEach(async(elem,index) => {
+      const id = ((elem as HTMLDivElement).getAttribute('id') as  string).slice(4)
+      const response:Response = await Engine.drive(Number(id))
+      try {
+      if (response.status === 500) throw new Error ('engine off')
+    } catch{
+      animationArr[index].pause()
     }
+    })
+    animationArr.forEach(async(elem:Animation) => {
+      elem.play()
+      winners.push(elem.finished)
+    })
+    resetAllButton.removeAttribute('disabled')
+    startAllButton.setAttribute('disabled','true')
+    const winner = await Promise.race(winners);
+    const carId = (carList[+winner.id] as HTMLDivElement).getAttribute('id')?.slice(4)
+    const winnerCar = await Garage.getCar(Number(carId))
+    const winnerSpeed = engineParametrs[+winner.id]
+    const winnerTime = Math.round(winnerSpeed.distance / winnerSpeed.velocity)
+    await Winner.saveWinner(Number(carId),winnerTime)
+    const modal = Layout.getPopoUp(winnerCar.name, winnerTime)
+    const body = document.querySelector('body') as HTMLBodyElement;
+    body.append(modal)
+    modal.addEventListener('click', (event) => {
+      body.removeChild(modal)
+    })
+
   })
 }
 
 
 
 const resetAll = async() => {
-  const statusField = document.querySelector('#statusField')
-  statusField?.addEventListener ('click', (event:Event) => {
-    if((event.target as HTMLButtonElement).innerText === 'reset All') {
+  const resetAllButton =  document.querySelector('#reset-all') as HTMLButtonElement;
+  const startAllButton =  document.querySelector('#start-all') as HTMLButtonElement;
+  resetAllButton.addEventListener ('click', (event:Event) => {
+    resetAllButton.setAttribute('disabled','true')
+    startAllButton.removeAttribute('disabled')
       const carList = document.querySelectorAll('.car') as NodeList
       carList.forEach(async(elem) => {
-        let car = (elem as HTMLDivElement).querySelector('svg') as SVGElement
-        const id = ((elem as HTMLDivElement).getAttribute('id') as  string).slice(4)
+        const id = ((elem as HTMLDivElement).getAttribute('id') as  string).slice(4);
+        ((elem as HTMLDivElement).querySelector('.btn-outline-primary') as HTMLButtonElement).removeAttribute('disabled');
+        ((elem as HTMLDivElement).querySelector('.btn-outline-warning ') as HTMLButtonElement).setAttribute('disabled','true');
         await Engine.stopEngine(Number(id))
-        car.style.transform = 'translateX(0)'
+
       })
-    }
+      document.getAnimations().forEach((elem) => elem.cancel())
   })
 }
