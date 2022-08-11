@@ -256,7 +256,7 @@ const resetAll = async() => {
   const startAllButton =  document.querySelector('#start-all') as HTMLButtonElement;
   resetAllButton.addEventListener ('click', (event:Event) => {
     resetAllButton.setAttribute('disabled','true')
-    startAllButton.removeAttribute('disabled')
+    
       const carList = document.querySelectorAll('.car') as NodeList
       carList.forEach(async(elem) => {
         const id = ((elem as HTMLDivElement).getAttribute('id') as  string).slice(4);
@@ -266,5 +266,6 @@ const resetAll = async() => {
 
       })
       document.getAnimations().forEach((elem) => elem.cancel())
+      startAllButton.removeAttribute('disabled')
   })
 }
