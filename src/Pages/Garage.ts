@@ -1,17 +1,18 @@
-import { animation } from "../Controlers/animation";
-import { generateCar } from "../Controlers/listenets/generateCars";
-import { getCarID } from "../Controlers/listenets/getCarId";
-import { listenCreate } from "../Controlers/listenets/listenerCreate";
-import { toggleUpdateField } from "../Controlers/listenets/toggleUpdate";
-import { EngineHandler, GarageHandler, WinnerHandler } from "../Controlers/Requests";
-import { Layout } from "../View/layout";
-import { Render } from "../View/RanderLayout";
+import { animation } from '../controlers/animation';
+import { generateCar } from '../controlers/utils/generateCars';
+import { getCarID } from '../controlers/utils/getCarId';
+import { listenCreate } from '../controlers/utils/listenerCreate';
+import { toggleUpdateField } from '../controlers/utils/toggleUpdate';
+import { EngineHandler, GarageHandler, WinnerHandler } from '../controlers/Requests';
+import { Layout } from '../view/layout';
+import { Render } from '../view/RanderLayout';
+import { Car, EngineParameters } from '../types/types';
 
 const link = 'http://127.0.0.1:3000'
 const Garage = new GarageHandler(link);
 const Engine = new EngineHandler(link);
 const Winner = new WinnerHandler(link)
-const GarageRender = new Render
+const GarageRender = new Render()
 
  const  generateGarage = async(page:number = 1) => {
   const content = document.querySelector('.content-wrapper') as HTMLElement;
@@ -24,23 +25,6 @@ const GarageRender = new Render
   GarageRender.renderStatus()
   const submitInputs = (document.querySelector('.car-update') as HTMLDivElement).querySelectorAll('input')
   submitInputs.forEach((elem) => (elem as HTMLInputElement).setAttribute('disabled', 'true'))
-  const paginButton = (document.querySelector('.pagination') as HTMLElement)
-  // if(page === totalPages && totalPages > 1){
-  //   paginButton.firstElementChild?.classList.remove('disabled')
-  //   paginButton.lastElementChild?.classList.add('disabled')
-  // }
-  // if(page === 1 && totalPages > 1){
-  //   paginButton.firstElementChild?.classList.add('disabled')
-  //   paginButton.lastElementChild?.classList.remove('disabled')
-  // }
-  // if(page === totalPages && totalPages === 1){
-  //   paginButton.firstElementChild?.classList.add('disabled')
-  //   paginButton.lastElementChild?.classList.add('disabled')
-  // }
-  // if(page > 1  && page < totalPages){
-  //   paginButton.firstElementChild?.classList.remove('disabled')
-  //   paginButton.lastElementChild?.classList.remove('disabled')
-  // }
 };
 
 export const startGarage = () =>{
@@ -90,7 +74,7 @@ const updateCar = async() => {
   const carsInGarage = document.querySelector('#cars-in-garage') as HTMLDivElement
   let id:number = 0;
   let updateStatus:boolean = false;
-  let car:any 
+  let car:Car 
   carsInGarage.addEventListener('click', async(event:Event) => {
     if(!updateStatus){
       id = getCarID(event, 'Select') as number
@@ -202,10 +186,10 @@ const massStart =  () => {
   const carList = document.querySelectorAll('.car') as NodeList;
   startAllButton.addEventListener('click', async() => {
     
-    let engineParametrs:any = [];
-    const promises:any = [];
+    let engineParametrs:EngineParameters[] = [];
+    const promises:Promise<EngineParameters>[] = [];
     const animationArr:Animation[] =[];
-    const winners:any = []
+    const winners:Promise<Animation>[] = []
     carList.forEach((elem, index) => {
       const id = ((carList[index] as HTMLDivElement).getAttribute('id') as  string).slice(4)
       promises.push( Engine.startEngine(Number(id)))
@@ -237,7 +221,7 @@ const massStart =  () => {
     const carId = (carList[+winner.id] as HTMLDivElement).getAttribute('id')?.slice(4)
     const winnerCar = await Garage.getCar(Number(carId))
     const winnerSpeed = engineParametrs[+winner.id]
-    const winnerTime = Math.round(winnerSpeed.distance / winnerSpeed.velocity)
+    const winnerTime = +(winnerSpeed.distance / (winnerSpeed.velocity * 1000)).toFixed(2)
     await Winner.saveWinner(Number(carId),winnerTime)
     const modal = Layout.getPopoUp(winnerCar.name, winnerTime)
     const body = document.querySelector('body') as HTMLBodyElement;

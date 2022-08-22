@@ -1,16 +1,19 @@
-import { startGarage } from "./Pages/Garage";
-import { startWinners, winnersPage } from "./Pages/Winners";
-import { Layout } from "./View/layout";
+import { startGarage } from "./pages/Garage";
+import { startWinners} from "./pages/Winners";
+import { Layout } from "./view/layout";
 
 const body = document.querySelector('body') as HTMLBodyElement;
 body.append(Layout.getHeader())
 body.append(Layout.getContetnWrapper());
-// alert('Подождите с проверкой до четверга. Спасибо за понимание')
+type Page = {
+  garage:boolean,
+  winners:boolean,
+}
 const pages = {
   garage: true,
   winners: false
 }
-const randerPage  = (pages:any):void => {
+const randerPage  = (pages:Page):void => {
   if(pages.garage) {
     startGarage()
   } else startWinners()

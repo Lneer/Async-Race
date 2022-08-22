@@ -100,6 +100,7 @@ export class Layout {
     </div>
   </div>`
     return modal
+    
   }
 
   getWinners = () => {
@@ -108,7 +109,7 @@ export class Layout {
     const winDisplay = sortType === 'wins'?'':`class="display"`
     const timeDisplay = sortType === 'time'?'':`class="display"`
     const orderDirect = orderType === 'ASC' ? '': 'style = "transform: scaleY(-1);"'
-   return  `<div class = container-sm>
+    return  `<div class = container-sm>
    <h1>Winners  </h1>
     <h2>Page  </h2>
     <table class = "table table-striped">

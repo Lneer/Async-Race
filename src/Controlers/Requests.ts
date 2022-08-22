@@ -1,3 +1,5 @@
+import { Winner, Winners } from "../types/types";
+
 type options = {
    page: number;
    limit: number;
@@ -16,7 +18,7 @@ export class GarageHandler {
     const response = await fetch(fullUrl)
     return {
       item: await response.json(),
-      count: response.headers.get('X-Total-Count'),
+      count: Number(response.headers.get('X-Total-Count')),
     }
   }
 
@@ -112,10 +114,10 @@ export class WinnerHandler {
     const response = await fetch(fullUrl,{
       method: method,
     })
-    const items: any = response.json()
+    const items: Promise<Winner[]> = response.json()
     return  {
       items: await items,
-      count: response.headers.get('X-Total-Count'),
+      count: Number(response.headers.get('X-Total-Count')),
     }
   }
 

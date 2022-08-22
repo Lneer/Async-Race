@@ -1,5 +1,5 @@
-import { GarageHandler, WinnerHandler } from "../Controlers/Requests"
-import { Render } from "../View/RanderLayout"
+import { GarageHandler, WinnerHandler } from "../controlers/Requests"
+import { Render } from "../view/RanderLayout"
 const link = 'http://127.0.0.1:3000'
 const Winner = new WinnerHandler(link)
 const Garage = new GarageHandler(link)
@@ -19,13 +19,6 @@ export const winnersPage = async() => {
       table?.append(row)
     }
   }
-  //  winners.items.forEach(async(elem:any,index:number) => {
-  //   console.log(elem.id)
-  //   const car = await Garage.getCar(elem.id)
-  //   const row = PageRender.Base.getWinner(index,{wins: elem.wins, time:elem.time,}, {color:car.color, name: car.name})
-  //   const table = document.querySelector('#winner-tbody') 
-  //   table?.append(row)
-  // });
 }
 
 export const startWinners = () =>{

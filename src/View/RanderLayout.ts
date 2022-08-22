@@ -1,4 +1,5 @@
-import { Layout } from "./layout";
+import { Car, Cars, Winners } from '../types/types';
+import { Layout } from './layout';
 
 export class Render {
 	Base : Layout
@@ -20,10 +21,10 @@ export class Render {
     statusField.innerHTML = this.Base.getStatusField()
   }
 
-	renderGarage = (Cars:any) => {
+	renderGarage = (Cars:Cars) => {
 		const garage = document.querySelector('#cars-in-garage') as HTMLDivElement
 		garage.innerHTML ='';
-		Cars.item.forEach((el:any) => garage.innerHTML += this.Base.getCar(el.id,el.name, el.color));
+		Cars.item.forEach((el:Car) => garage.innerHTML += this.Base.getCar(el.id,el.name, el.color));
 		const counter = document.querySelector('#counter') as HTMLDivElement;
 		(counter.firstElementChild as HTMLHeadElement).innerText = `Garage(${Cars.count})`;
 		const page = sessionStorage.getItem('page');
@@ -31,7 +32,7 @@ export class Render {
 		(counter.lastElementChild as HTMLHeadElement).innerText = `page(${pageInt})`;
 	}
 
-	 rengerWinners = (winners:any) => {
+	 rengerWinners = (winners:Winners) => {
 		const content = document.querySelector('.content-wrapper') as HTMLElement;
 		content.innerHTML ='';
 		content.innerHTML = this.Base.getWinners();
