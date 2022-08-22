@@ -52,7 +52,6 @@ const pagination = async() => {
 const sortingResult =  () => {
   const toWinner = document.querySelector('.count-sort')
   const toTime = document.querySelector('.time-sort')
-
   toWinner?.addEventListener('click',() => {
     (toTime?.firstElementChild as HTMLSpanElement).classList.add('display')
     toWinner?.firstElementChild?.classList.remove('display')
@@ -67,7 +66,6 @@ const sortingResult =  () => {
     startWinners()
   })
   toTime?.addEventListener('click',() => {
-    // toWinner?.setAttribute('disabled', 'true')
     let sortType = sessionStorage.getItem('sortType')
     let orderType = sessionStorage.getItem('orderType')
     if(sortType !== 'time') sessionStorage.setItem('sortType','time')

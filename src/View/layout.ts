@@ -31,8 +31,8 @@ export class Layout {
                 <button type="button" class="btn btn-outline-primary p-2">start</button>
                 <button type="button" class="btn btn-outline-warning p-2" disabled>reset</button>
                 <div class="carimg">
-                <svg style = "fill:${carColor}">${carTemplate}</svg>
-                <svg class="finish-flag">${finishFlag}</svg>
+                  <svg style = "fill:${carColor}">${carTemplate}</svg>
+                  <svg class="finish-flag">${finishFlag}</svg>
                 </div>
               </div>  
             </div>`)
@@ -42,25 +42,25 @@ export class Layout {
     const inner = document.createElement('div')
     inner.innerHTML = `
     <div class="container-fluid">
-    <div class="row">
-      <div class="col-3" id="operationField"></div>
-      <div class="col" id="statusField"></div>
-    </div>
-    <div class="row" id="counter">
-      <h3>Garage(0)</h3>
-      <h4>Page#1</h4>
-    </div>
-    <div class="row d-flex flex-column gap-3" id="cars-in-garage" ></div>
-    <nav aria-label="Page navigation example">
-      <ul class="pagination justify-content-start mt-5">
-        <li class="page-item prev">
-          <a class="page-link prev">Previous</a>
-        </li>
-        <li class="page-item next">
-          <a class="page-link next">Next</a>
-        </li>
-      </ul>
-    </nav>
+      <div class="row">
+        <div class="col-3" id="operationField"></div>
+        <div class="col" id="statusField"></div>
+      </div>
+      <div class="row" id="counter">
+        <h3>Garage(0)</h3>
+        <h4>Page#1</h4>
+      </div>
+      <div class="row d-flex flex-column gap-3" id="cars-in-garage" ></div>
+      <nav aria-label="Page navigation example">
+        <ul class="pagination justify-content-start mt-5">
+          <li class="page-item prev">
+            <a class="page-link prev">Previous</a>
+          </li>
+          <li class="page-item next">
+            <a class="page-link next">Next</a>
+          </li>
+        </ul>
+      </nav>
     </div>`
     return (inner);
   };
@@ -89,16 +89,16 @@ export class Layout {
     modal.classList.add('modal')
     modal.innerHTML = `
     <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">Vinner is ${name}</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Vinner is ${name}</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <p>Finished whith ${time} sec.</p>
+        </div>
       </div>
-      <div class="modal-body">
-        <p>Finished whith ${time} sec.</p>
-      </div>
-    </div>
-  </div>`
+    </div>`
     return modal
     
   }
@@ -109,31 +109,31 @@ export class Layout {
     const winDisplay = sortType === 'wins'?'':`class="display"`
     const timeDisplay = sortType === 'time'?'':`class="display"`
     const orderDirect = orderType === 'ASC' ? '': 'style = "transform: scaleY(-1);"'
-    return  `<div class = container-sm>
-   <h1>Winners  </h1>
+    return  `
+    <div class = container-sm>
+    <h1>Winners  </h1>
     <h2>Page  </h2>
-    <table class = "table table-striped">
-    <thead>
-        <th scope="col">Number</th>
-        <th scope="col">Car</th>
-        <th scope="col">Name</th>
-        <th class="count-sort" scope="col">Wins count <span ${orderDirect} ${winDisplay}>&#8659</span></th>
-        <th class="time-sort" scope="col">Best Time<span ${orderDirect} ${timeDisplay}>&#8659</span></th>
-    </thead>
-    <tbody id = "winner-tbody">
-  
-    </tbody>
-    </table>
-    <nav aria-label="Page navigation example">
-    <ul class="pagination-winners pagination justify-content-start mt-5">
-      <li class="page-item prev">
-        <a class="page-link prev">Previous</a>
-      </li>
-      <li class="page-item next">
-        <a class="page-link next">Next</a>
-      </li>
-    </ul>
-  </nav>
+      <table class = "table table-striped">
+        <thead>
+          <th scope="col">Number</th>
+          <th scope="col">Car</th>
+          <th scope="col">Name</th>
+          <th class="count-sort" scope="col">Wins count <span ${orderDirect} ${winDisplay}>&#8659</span></th>
+          <th class="time-sort" scope="col">Best Time<span ${orderDirect} ${timeDisplay}>&#8659</span></th>
+        </thead>
+        <tbody id = "winner-tbody">
+        </tbody>
+      </table>
+      <nav aria-label="Page navigation example">
+        <ul class="pagination-winners pagination justify-content-start mt-5">
+          <li class="page-item prev">
+            <a class="page-link prev">Previous</a>
+          </li>
+          <li class="page-item next">
+            <a class="page-link next">Next</a>
+          </li>
+        </ul>
+      </nav>
     </div>
     `
   }  

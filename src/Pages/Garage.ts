@@ -119,7 +119,7 @@ const generateCars  = async() =>{
 const pagination = async() => {
   const carsPerPage = 7;
   const paginationBody = document.querySelector('.pagination')
-   paginationBody?.addEventListener('click', async(event:Event) =>{
+  paginationBody?.addEventListener('click', async(event:Event) =>{
     let page = sessionStorage.getItem('page') ? +(sessionStorage.getItem('page') as string) : 1
     if((event.target as HTMLLIElement).classList.contains('prev')){
       page = page===1? 1: page - 1
@@ -189,7 +189,7 @@ const massStart =  () => {
     let engineParametrs:EngineParameters[] = [];
     const promises:Promise<EngineParameters>[] = [];
     const animationArr:Animation[] =[];
-    const winners:Promise<Animation>[] = []
+    const winners:Promise<Animation>[] = [];
     carList.forEach((elem, index) => {
       const id = ((carList[index] as HTMLDivElement).getAttribute('id') as  string).slice(4)
       promises.push( Engine.startEngine(Number(id)))
@@ -206,10 +206,10 @@ const massStart =  () => {
       const id = ((elem as HTMLDivElement).getAttribute('id') as  string).slice(4)
       const response:Response = await Engine.drive(Number(id))
       try {
-      if (response.status === 500) throw new Error ('engine off')
-    } catch{
+        if (response.status === 500) throw new Error ('engine off')
+      } catch{
       animationArr[index].pause()
-    }
+      }
     })
     animationArr.forEach(async(elem:Animation) => {
       elem.play()
@@ -240,16 +240,14 @@ const resetAll = async() => {
   const startAllButton =  document.querySelector('#start-all') as HTMLButtonElement;
   resetAllButton.addEventListener ('click', (event:Event) => {
     resetAllButton.setAttribute('disabled','true')
-    
-      const carList = document.querySelectorAll('.car') as NodeList
-      carList.forEach(async(elem) => {
-        const id = ((elem as HTMLDivElement).getAttribute('id') as  string).slice(4);
-        ((elem as HTMLDivElement).querySelector('.btn-outline-primary') as HTMLButtonElement).removeAttribute('disabled');
-        ((elem as HTMLDivElement).querySelector('.btn-outline-warning ') as HTMLButtonElement).setAttribute('disabled','true');
-        await Engine.stopEngine(Number(id))
-
-      })
-      document.getAnimations().forEach((elem) => elem.cancel())
-      startAllButton.removeAttribute('disabled')
+    const carList = document.querySelectorAll('.car') as NodeList
+    carList.forEach(async(elem) => {
+      const id = ((elem as HTMLDivElement).getAttribute('id') as  string).slice(4);
+      ((elem as HTMLDivElement).querySelector('.btn-outline-primary') as HTMLButtonElement).removeAttribute('disabled');
+      ((elem as HTMLDivElement).querySelector('.btn-outline-warning ') as HTMLButtonElement).setAttribute('disabled','true');
+      await Engine.stopEngine(Number(id))
+    })
+    document.getAnimations().forEach((elem) => elem.cancel())
+    startAllButton.removeAttribute('disabled')
   })
 }
